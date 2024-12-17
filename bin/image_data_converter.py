@@ -4,7 +4,7 @@ import warnings
 import datetime
 import optparse
 import os, errno
-from keras.preprocessing.image import array_to_img
+# from keras.preprocessing.image import array_to_img
 from keras.preprocessing import image
 from keras.applications.vgg16 import preprocess_input
 import numpy as np
