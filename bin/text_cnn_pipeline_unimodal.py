@@ -144,8 +144,8 @@ if __name__ == '__main__':
     if (options.w2v_checkpoint and file_exist(options.w2v_checkpoint)):
         options.emb_matrix = pickle.load(open(options.w2v_checkpoint, "rb"))
     else:
-        model_file = "$path/crisis_word_vector.txt"
-        emb_model = KeyedVectors.load_word2vec_format(model_file, binary=False)
+        model_file = "crisisNLP_word_vector.bin"
+        emb_model = KeyedVectors.load_word2vec_format(model_file, binary=True)
         embedding_matrix = data_process.prepare_embedding(word_index, emb_model, options.vocab_size,
                                                           options.embedding_dim)
         print("Embedding size: " + str(embedding_matrix.shape))
