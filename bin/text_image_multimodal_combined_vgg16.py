@@ -217,18 +217,25 @@ if __name__ == "__main__":
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
     print(model.summary())
 
-    ######## Callbacks ########
+    # Callbacks
     callbacks_list = [
         EarlyStopping(monitor="val_accuracy", patience=patience_early_stop, verbose=1, mode="max"),
         ReduceLROnPlateau(monitor="val_accuracy", patience=patience_learning_rate, verbose=1, factor=0.1, min_lr=1e-6),
-        CSVLogger("training_log.csv", append=False, separator="\t"),
-        ModelCheckpoint("best_model.keras", monitor="val_accuracy", save_best_only=True, mode="max"),
-        TensorBoard(log_dir=f"logs/{time()}", histogram_freq=1),
+        CSVLogger(log_file, append=False, separator="\t"),
+        ModelCheckpoint(best_model_path, monitor="val_accuracy", save_best_only=True, mode="max",
+                        save_weights_only=False),
+        TensorBoard(log_dir=f"logs/{time()}", histogram_freq=1, write_graph=True),
     ]
 
-    ######## Model Training ########
+    # Model Training
     history = model.fit(
-        train_data_generator, epochs=nb_epoch, validation_data=val_data_generator, verbose=1, callbacks=callbacks_list
+        train_data_generator,
+        epochs=nb_epoch,
+        validation_data=val_data_generator,
+        verbose=1,
+        callbacks=callbacks_list,
+        use_multiprocessing=True,  # 如果需要多进程
+        workers=4,  # 进程数
     )
 
     ######## Save the model ########

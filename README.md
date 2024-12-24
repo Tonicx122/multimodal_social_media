@@ -83,6 +83,7 @@ python bin/image_data_converter.py -i data/all_images_path.txt -o data/task_data
 set CUDA_VISIBLE_DEVICES=0
 python bin/text_image_multimodal_combined_vgg16.py -i data/task_data/task_informative_text_img_agreed_lab_train.tsv -v data/task_data/task_informative_text_img_agreed_lab_dev.tsv -t data/task_data/task_informative_text_img_agreed_lab_test.tsv -m models/info_multimodal_paired_agreed_lab.model -o results/info_multimodal_results_cnn_paired_agreed_lab.txt --w2v_checkpoint w2v_checkpoint/data_w2v_info_paired_agreed_lab.model --label_index 6 > log/info_multimodal_paired_agreed_lab.log 2>&1
 
+nano log/info_multimodal_paired_agreed_lab.log
 ```
 
 

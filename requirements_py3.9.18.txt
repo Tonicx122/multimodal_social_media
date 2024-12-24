@@ -11,6 +11,7 @@ python-dateutil=2.9.0
 scikit-learn=1.5.1
 tensorflow-gpu=2.10.0
 tensorflow=2.10.0
+Pillow=11.0.0
 
 pip install six pandas nltk gensim numpy python_dateutil scikit_learn tensorflow
 conda install six pandas nltk gensim numpy python_dateutil scikit_learn
