@@ -223,7 +223,7 @@ if __name__ == "__main__":
         ReduceLROnPlateau(monitor="val_accuracy", patience=patience_learning_rate, verbose=1, factor=0.1, min_lr=1e-6),
         CSVLogger(log_file, append=False, separator="\t"),
         ModelCheckpoint(best_model_path, monitor="val_accuracy", save_best_only=True, mode="max",
-                        save_weights_only=False),
+                        save_weights_only=True),
         TensorBoard(log_dir=f"logs/{time()}", histogram_freq=1, write_graph=True),
     ]
 
