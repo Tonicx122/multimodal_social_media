@@ -28,8 +28,5 @@ COPY . /app
 ## 安装 Python 依赖
 #RUN pip install --no-cache-dir -r requirements.txt
 
-## 暴露端口（可选，取决于你的应用）
-#EXPOSE 8000
-
 ## 设置启动命令
 #CMD ["python", "app.py"]
