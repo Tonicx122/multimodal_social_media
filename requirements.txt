@@ -1,0 +1,12 @@
+six==1.16.0
+keras==2.10.0
+keras-preprocessing==1.1.2
+pandas==2.2.3
+nltk==3.9.1
+gensim==4.3.3
+numpy==1.26.4
+python-dateutil==2.9.0
+scikit-learn==1.5.1
+tensorflow-gpu==2.10.0
+tensorflow==2.10.0
+Pillow==11.0.0
