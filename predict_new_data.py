@@ -83,7 +83,7 @@ def read_dev_data_multimodal(data_file, tokenizer, MAX_SEQUENCE_LENGTH, delim=",
     print('Shape of data tensor:', data.shape)
     return data, image_list, ids
 
-def load_new_data(data_path, tokenizer, max_seq_length, label_index):
+def load_new_data(data_path, tokenizer, max_seq_length):
     """
     加载新数据集。
     """
@@ -92,7 +92,7 @@ def load_new_data(data_path, tokenizer, max_seq_length, label_index):
     #     data_path, tokenizer, max_seq_length, label_index, delim="\t"
     # )
     new_data, new_image_list, ids = read_dev_data_multimodal(
-        data_path, tokenizer, max_seq_length, label_index
+        data_path, tokenizer, max_seq_length
     )
     print("新数据加载成功。")
     return new_data, new_image_list, ids
