@@ -91,20 +91,6 @@ def read_dev_data_multimodal(data_file, tokenizer, MAX_SEQUENCE_LENGTH, delim=",
     print('Shape of data tensor:', data.shape)
     return data, image_list, ids
 
-def load_new_data(data_path, tokenizer, max_seq_length):
-    """
-    加载新数据集。
-    """
-    # 读取新数据
-    # new_x, new_image_list, new_y, new_le, new_labels, ids = data_process.read_dev_data_multimodal(
-    #     data_path, tokenizer, max_seq_length, label_index, delim="\t"
-    # )
-    new_data, new_image_list, ids = read_dev_data_multimodal(
-        data_path, tokenizer, max_seq_length
-    )
-    print("新数据加载成功。")
-    return new_data, new_image_list, ids
-
 
 def preprocess_input_vgg(x):
     """
@@ -166,7 +152,7 @@ def main():
     model, tokenizer, label_encoder = load_model_and_utils(MODEL_PATH, TOKENIZER_PATH, LABEL_ENCODER_PATH)
 
     # 加载新数据
-    new_data, new_image_list, ids = load_new_data(
+    new_data, new_image_list, ids = read_dev_data_multimodal(
         NEW_DATA_PATH, tokenizer, MAX_SEQUENCE_LENGTH
     )
 
