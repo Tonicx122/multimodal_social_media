@@ -5,9 +5,11 @@ FROM nvidia/cuda:11.2.2-cudnn8-runtime-ubuntu20.04
 ENV PYTHONUNBUFFERED=1
 
 # 安装 Miniconda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
+RUN apt-get update && apt-get install -y wget && \
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh && \
     bash miniconda.sh -b -p /opt/conda && \
     rm miniconda.sh
+
 
 # 设置环境变量
 ENV PATH="/opt/conda/bin:$PATH"
