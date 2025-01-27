@@ -21,7 +21,7 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 MODEL_PATH = "models/task_informative_text_img_agreed_lab_train/info_multimodal_paired_agreed_lab.weights.hdf5"  # 训练好的模型路径
 TOKENIZER_PATH = "models/task_informative_text_img_agreed_lab_train/info_multimodal_paired_agreed_lab.weights.tokenizer"  # tokenizer 路径
 LABEL_ENCODER_PATH = "models/task_informative_text_img_agreed_lab_train/info_multimodal_paired_agreed_lab.weights.label_encoder"  # label_encoder 路径
-NEW_DATA_PATH = "data/media_data/tweets_images_2025-01-27_21-57-57.csv"  # 新数据集路径
+NEW_DATA_PATH = "data/media_data/tweets_images_2025-01-28_01-15-13.csv"  # 新数据集路径
 OUTPUT_PATH = "results/new_data_predictions.txt"  # 预测结果输出路径
 
 # 模型参数（需要与训练时一致）
