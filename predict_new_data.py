@@ -3,7 +3,7 @@
 """
 用于加载训练好的多模态模型，并对新数据集进行预测。
 """
-
+import csv
 import os
 import pickle
 import warnings
