@@ -1,59 +1,36 @@
+import warnings
+
 import numpy as np
 import tensorflow as tf
-import tensorflow.keras as keras
 from tensorflow.keras.utils import Sequence
-from tensorflow.keras.preprocessing.image import array_to_img, img_to_array, load_img
 from tensorflow.keras.applications.vgg16 import preprocess_input
-import warnings
-import datetime
-import os, errno
 
-
-def preprocess_input_vgg(x):
+class PredictionDataGenerator(Sequence):
     """
-    Wrapper around keras.applications.vgg16.preprocess_input()
-    to make it compatible for use with keras.preprocessing.image.ImageDataGenerator's
-    `preprocessing_function` argument.
-
-    Parameters
-    ----------
-    x : a numpy 3darray (a single image to be preprocessed)
-
-    Note: This wrapper ensures compatibility between 3D tensors and
-    functions expecting 4D tensors.
-
-    Returns:
-    -------
-    A numpy 3darray (the preprocessed image).
-    """
-    X = np.expand_dims(x, axis=0)
-    X = preprocess_input(X)
-    return X[0]
-
-
-class DataGenerator(Sequence):
-    """
-    Generates data for Keras.
+    Data generator for prediction, generating batches of image and text inputs without labels.
     """
 
-    def __init__(self, image_file_list, text_vec, image_vec_dict, labels, max_seq_length=20, batch_size=32,
-                 n_classes=2, shuffle=False):
+    def __init__(self, image_file_list, text_vec, image_vec_dict, batch_size=32, max_seq_length=20, shuffle=False):
         """
-        Initialization of DataGenerator.
+        Initialize the prediction data generator.
+        :param image_file_list: List of image file paths.
+        :param text_vec: Numpy array of text sequences.
+        :param image_vec_dict: Dictionary mapping image file names to precomputed image feature vectors.
+        :param batch_size: Number of samples per batch.
+        :param max_seq_length: Maximum sequence length for text data.
+        :param shuffle: Whether to shuffle data between epochs.
         """
-        self.batch_size = batch_size
-        self.labels = labels
         self.image_file_list = image_file_list
         self.text_vec = text_vec
         self.image_vec_dict = image_vec_dict
-        self.n_classes = n_classes
-        self.shuffle = shuffle
+        self.batch_size = batch_size
         self.max_seq_length = max_seq_length
+        self.shuffle = shuffle
         self.on_epoch_end()
 
     def __len__(self):
         """
-        Denotes the number of batches per epoch.
+        Returns the number of batches per epoch.
         """
         return int(np.ceil(len(self.image_file_list) / float(self.batch_size)))
 
@@ -65,13 +42,10 @@ class DataGenerator(Sequence):
         end = min((index + 1) * self.batch_size, len(self.image_file_list))
 
         temp_indexes = self.indexes[start:end]
+        images_batch, text_batch = self.__data_generation(temp_indexes)
 
-        images_batch, text_batch, y = self.__data_generation(temp_indexes)
-
-        # return [images_batch, text_batch], y
-        return (tf.convert_to_tensor(images_batch, dtype=tf.float32),
-                    tf.convert_to_tensor(text_batch, dtype=tf.int32)), \
-                   tf.convert_to_tensor(y, dtype=tf.float32)
+        return [tf.convert_to_tensor(images_batch, dtype=tf.float32),
+                tf.convert_to_tensor(text_batch, dtype=tf.int32)]
 
     def on_epoch_end(self):
         """
@@ -85,7 +59,6 @@ class DataGenerator(Sequence):
         """
         Generates data containing batch_size samples.
         """
-        y = np.zeros((len(indexes), self.n_classes), dtype=int)
         text_batch = np.zeros((len(indexes), self.max_seq_length), dtype=int)
         images_batch = np.zeros((len(indexes), 224, 224, 3), dtype=float)
 
@@ -93,25 +66,26 @@ class DataGenerator(Sequence):
             try:
                 image_file_name = str(self.image_file_list[index])
 
+                # Load image features from precomputed dictionary
                 if image_file_name in self.image_vec_dict:
                     img = self.image_vec_dict[image_file_name]
-                    # images_batch[i] = img
                     if img is None:
                         warnings.warn(f"Image vector for {image_file_name} is None. Assigning zero array.")
                         images_batch[i] = np.zeros((224, 224, 3))
                     else:
                         images_batch[i] = img
-
-                    y[i] = self.labels[index]
-                    text_batch[i] = self.text_vec[index]
                 else:
                     warnings.warn(f"Image {image_file_name} not found in image_vec_dict. Assigning zero array.")
                     images_batch[i] = np.zeros((224, 224, 3))
+
+                # Load text data
+                text_batch[i] = self.text_vec[index]
 
             except Exception as e:
                 warnings.warn(f"Exception in data generation for index {index}: {str(e)}")
                 images_batch[i] = np.zeros((224, 224, 3))
 
+        # Preprocess images using VGG's preprocessing function
         current_images_batch = preprocess_input(images_batch)
 
-        return current_images_batch, text_batch, y
+        return current_images_batch, text_batch

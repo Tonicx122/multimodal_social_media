@@ -59,16 +59,30 @@ def file_exist(w2v_checkpoint):
 def save_model(model, model_dir, model_file_name, tokenizer, label_encoder):
     os.makedirs(model_dir, exist_ok=True)
     base_name = os.path.splitext(os.path.basename(model_file_name))[0]
-    model_file = os.path.join(model_dir, base_name + ".hdf5")
-    tokenizer_file = os.path.join(model_dir, base_name + ".tokenizer")
-    label_encoder_file = os.path.join(model_dir, base_name + ".label_encoder")
-
-    with open(tokenizer_file, 'wb') as handle:
-        pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    with open(label_encoder_file, 'wb') as handle:
-        pickle.dump(label_encoder, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    model_file = os.path.join(model_dir, f"{base_name}.hdf5")
+    tokenizer_file = os.path.join(model_dir, f"{base_name}.tokenizer")
+    label_encoder_file = os.path.join(model_dir, f"{base_name}.label_encoder")
+    config_file = os.path.join(model_dir, f"{base_name}_config.txt")
 
     model.save(model_file)
+
+    with open(tokenizer_file, "wb") as handle:
+        pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    with open(label_encoder_file, "wb") as handle:
+        pickle.dump(label_encoder, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # 保存配置文件
+    with open(config_file, "w") as config:
+        config.write(f"model_file={model_file}\n")
+        config.write(f"tokenizer_file={tokenizer_file}\n")
+        config.write(f"label_encoder_file={label_encoder_file}\n")
+    print(f"模型和相关文件已保存到目录: {model_dir}")
+    print(f"模型文件: {model_file}")
+    print(f"Tokenizer 文件: {tokenizer_file}")
+    print(f"Label Encoder 文件: {label_encoder_file}")
+    print(f"配置文件: {config_file}")
+
 
 def write_results(out_file, file_name, accu, P, R, F1, wAUC, AUC, report, conf_mat):
     result = (
@@ -85,6 +99,19 @@ def dir_exist(dirname):
     os.makedirs(dirname, exist_ok=True)
 
 if __name__ == "__main__":
+    # # 获取所有可用的 GPU 设备
+    # gpus = tf.config.list_physical_devices('GPU')
+    #
+    # # 如果至少有一个 GPU 可用，启用显存按需分配
+    # if gpus:
+    #     try:
+    #         # 启用第一个 GPU 的显存按需增长
+    #         tf.config.experimental.set_memory_growth(gpus[0], True)
+    #         print("GPU memory growth enabled")
+    #     except RuntimeError as e:
+    #         # 捕获运行时错误，通常在 TensorFlow 启动后配置 GPU 设置时可能会出现
+    #         print(e)
+
     warnings.filterwarnings("ignore")
     parser = optparse.OptionParser()
     parser.add_option('-i', action="store", dest="train_data", default=None, type="string")
@@ -171,10 +198,10 @@ if __name__ == "__main__":
     print(f"Number of classes: {nb_classes}")
 
     params = {"max_seq_length": MAX_SEQUENCE_LENGTH, "batch_size": batch_size, "n_classes": nb_classes, "shuffle": True}
-    train_data_generator = DataGenerator(train_image_list, train_x, None, train_y, **params)
+    train_data_generator = DataGenerator(train_image_list, train_x, images_npy_data, train_y, **params)
 
     params = {"max_seq_length": MAX_SEQUENCE_LENGTH, "batch_size": batch_size, "n_classes": nb_classes, "shuffle": False}
-    val_data_generator = DataGenerator(dev_image_list, dev_x, None, dev_y, **params)
+    val_data_generator = DataGenerator(dev_image_list, dev_x, images_npy_data, dev_y, **params)
 
     MAX_SEQUENCE_LENGTH = options.max_seq_length
     MAX_NB_WORDS = options.vocab_size
@@ -211,7 +238,7 @@ if __name__ == "__main__":
     model = Model(inputs=[vgg16.input, text_input], outputs=output)
 
     ######## Model Compilation ########
-    lr = 1e-5
+    lr = 1e-6
     print("lr= " + str(lr) + ", beta_1=0.9, beta_2=0.999, amsgrad=False")
     adam = Adam(learning_rate=lr,beta_1=0.9,beta_2=0.999,amsgrad=False)
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
@@ -220,7 +247,7 @@ if __name__ == "__main__":
     # Callbacks
     callbacks_list = [
         EarlyStopping(monitor="val_accuracy", patience=patience_early_stop, verbose=1, mode="max"),
-        ReduceLROnPlateau(monitor="val_accuracy", patience=patience_learning_rate, verbose=1, factor=0.1, min_lr=1e-6),
+        ReduceLROnPlateau(monitor="val_accuracy", patience=patience_learning_rate, verbose=1, factor=0.1, min_lr=0.0001),
         CSVLogger(log_file, append=False, separator="\t"),
         ModelCheckpoint(best_model_path, monitor="val_accuracy", save_best_only=True, mode="max",
                         save_weights_only=True),
