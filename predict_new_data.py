@@ -55,26 +55,34 @@ def read_dev_data_multimodal(data_file, tokenizer, MAX_SEQUENCE_LENGTH, delim=",
     """
     data, image_list, ids = [], [], []
 
-    with open(data_file, 'rb') as f:
-        next(f)  # 跳过表头
-        for line in f:
-            line = line.decode(encoding='utf-8').strip()
-            if not line:
+    with open(data_file, 'r', encoding='utf-8') as f:
+        reader = csv.reader(f, delimiter=delim)
+
+        # 跳过表头
+        next(reader)
+
+        for row_num, row in enumerate(reader, start=1):
+            # 检查列数是否足够
+            if len(row) < 4:
+                print(f"行 {row_num} 列数不足，跳过：{row}")
                 continue
-            row = line.split(delim)
 
-            # 提取文本内容
-            txt = aidrtokenize.tokenize(row[2].strip())  # `tweet_text` 在第 3 列（索引 2）
-            if len(txt) < 1:
-                print("TEXT SIZE:", txt)
+            try:
+                # 提取文本内容
+                txt = aidrtokenize.tokenize(row[2].strip())  # `tweet_text` 在第 3 列（索引 2）
+                if len(txt) < 1:
+                    print(f"行 {row_num} 文本无效，跳过：{row[2]}")
+                    continue
+                data.append(" ".join(txt))
+
+                # 提取图片路径
+                image_list.append("data/media_data/" + row[3].strip())  # `image` 在第 4 列（索引 3）
+
+                # 提取 Tweet ID
+                ids.append(row[0].strip())  # `tweet_id` 在第 1 列（索引 0）
+            except Exception as e:
+                print(f"行 {row_num} 处理出错：{e}，跳过")
                 continue
-            data.append(" ".join(txt))
-
-            # 提取图片路径
-            image_list.append("data/media_data/" + row[3].strip())  # `image` 在第 4 列（索引 3）
-
-            # 提取 Tweet ID
-            ids.append(row[0].strip())  # `tweet_id` 在第 1 列（索引 0）
 
     # 将文本数据转换为序列
     sequences = tokenizer.texts_to_sequences(data)
