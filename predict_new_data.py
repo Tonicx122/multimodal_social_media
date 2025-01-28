@@ -125,18 +125,18 @@ def generate_image_vec_dict(image_file_list, target_size=(224, 224)):
 
 
 
-def save_predictions(output_path, predictions, ids, label_encoder):
+def save_predictions(output_path, predictions, ids, predicted_labels):
     """
     保存预测结果。
     """
-    # 将预测结果转换为类别标签
-    predicted_labels = np.argmax(predictions, axis=1)
-    predicted_classes = label_encoder.inverse_transform(predicted_labels)
+    # # 将预测结果转换为类别标签
+    # predicted_labels = np.argmax(predictions, axis=1)
+    # predicted_classes = label_encoder.inverse_transform(predicted_labels)
 
     # 将结果保存到文件
     with open(output_path, "w") as f:
-        for id_, pred_class in zip(ids, predicted_classes):
-            f.write(f"{id_}\t{pred_class}\n")
+        for ids, label in zip(ids, predicted_labels):
+            f.write(f"{ids}\t{label}\n")
     print(f"预测结果已保存到: {output_path}")
 
 def main():
@@ -170,7 +170,7 @@ def main():
         print(f"ID: {ids}, Predicted Label: {label}")
 
     # 保存预测结果
-    save_predictions(OUTPUT_PATH, predictions, ids, label_encoder)
+    save_predictions(OUTPUT_PATH, predictions, ids, predicted_labels)
 
 
 
