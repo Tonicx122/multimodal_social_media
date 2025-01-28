@@ -92,17 +92,6 @@ def read_dev_data_multimodal(data_file, tokenizer, MAX_SEQUENCE_LENGTH, delim=",
     return data, image_list, ids
 
 
-def preprocess_input_vgg(x):
-    """
-    VGG16 的预处理函数包装器，用于兼容 3D 张量输入。
-    :param x: numpy 3D 数组（单张图像）。
-    :return: 预处理后的 numpy 3D 数组。
-    """
-    X = np.expand_dims(x, axis=0)
-    X = preprocess_input(X)
-    return X[0]
-
-
 def generate_image_vec_dict(image_file_list, target_size=(224, 224)):
     """
     动态生成图像特征字典，与您提供的逻辑保持一致。
@@ -119,7 +108,8 @@ def generate_image_vec_dict(image_file_list, target_size=(224, 224)):
             img_data = img_to_array(img)
 
             # 预处理图像数据
-            img_data = preprocess_input_vgg(img_data)
+            img_data = np.expand_dims(img_data, axis=0)
+            img_data = preprocess_input(img_data)
 
             # 存储预处理后的图像数据
             image_vec_dict[img_path] = img_data

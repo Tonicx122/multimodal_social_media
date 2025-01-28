@@ -1,16 +1,18 @@
 import warnings
 
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 from tensorflow.keras.utils import Sequence
 from tensorflow.keras.applications.vgg16 import preprocess_input
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 class PredictionDataGenerator(Sequence):
     """
     Data generator for prediction, generating batches of image and text inputs without labels.
     """
 
-    def __init__(self, image_file_list, text_vec, image_vec_dict, batch_size=32, max_seq_length=20, shuffle=False):
+    def __init__(self, image_file_list, text_vec, image_vec_dict, batch_size=32, max_seq_length=25, shuffle=False):
         """
         Initialize the prediction data generator.
         :param image_file_list: List of image file paths.
