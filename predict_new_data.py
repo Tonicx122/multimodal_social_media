@@ -80,6 +80,8 @@ def read_dev_data_multimodal(data_file, tokenizer, MAX_SEQUENCE_LENGTH, delim=",
 
                 # 提取 Tweet ID
                 ids.append(row[0].strip())  # `tweet_id` 在第 1 列（索引 0）
+                print("Extracted IDs:", ids)
+
             except Exception as e:
                 print(f"行 {row_num} 处理出错：{e}，跳过")
                 continue
@@ -165,7 +167,7 @@ def main():
     predicted_labels = label_encoder.inverse_transform(np.argmax(predictions, axis=1))
 
     for ids, label in zip(ids, predicted_labels):
-        print(f"ID: {id}, Predicted Label: {label}")
+        print(f"ID: {ids}, Predicted Label: {label}")
 
     # 保存预测结果
     save_predictions(OUTPUT_PATH, predictions, ids, label_encoder)
