@@ -18,22 +18,8 @@ mv CrisisMMD_v2.0/data_image $PWD/
 
 You need to modify the word2vec model path in ```bin/text_cnn_pipeline_unimodal.py``` script.
 
-## Install dependencies:
-python 2.7
 
-#### Create a virtual environment
-```
-python -m venv multimodal_env python=2.7
-```
-#### Activate your virtual environment
-```
-source $PATH_TO_ENV/multimodal_env/bin/activate
-```
 
-#### Install dependencies
-```
-pip install -r requirements_py2.7.txt
-```
 
 ## Run unimodel classifiers:
 
@@ -73,25 +59,25 @@ CUDA_VISIBLE_DEVICES=0 python bin/text_image_multimodal_combined_vgg16.py -i dat
 
 ```
 
-## Run multimodel classifiers on Windows:
+## (train)Run multimodel classifiers:
 
 ```bash
 :: Step 1: Convert image data
 python bin/image_data_converter.py -i data/all_images_path.txt -o data/task_data/all_images_data_dump.npy
 
 :: Step 2: Run multimodal model
-(windows) set CUDA_VISIBLE_DEVICES=0
-(linux) export CUDA_VISIBLE_DEVICES=0
-# python bin/text_image_multimodal_combined_vgg16.py -i data/task_data/task_informative_text_img_agreed_lab_train.tsv -v data/task_data/task_informative_text_img_agreed_lab_dev.tsv -t data/task_data/task_informative_text_img_agreed_lab_test.tsv -m models/info_multimodal_paired_agreed_lab.model -o results/info_multimodal_results_cnn_paired_agreed_lab.txt --w2v_checkpoint w2v_checkpoint/data_w2v_info_paired_agreed_lab.model --label_index 6 > log/info_multimodal_paired_agreed_lab.log 2>&1
+export CUDA_VISIBLE_DEVICES=0
 python bin/text_image_multimodal_combined_vgg16.py -i data/task_data/task_informative_text_img_agreed_lab_train.tsv -v data/task_data/task_informative_text_img_agreed_lab_dev.tsv -t data/task_data/task_informative_text_img_agreed_lab_test.tsv -m models/info_multimodal_paired_agreed_lab.weights.h5 -o results/info_multimodal_results_cnn_paired_agreed_lab.txt --w2v_checkpoint w2v_checkpoint/data_w2v_info_paired_agreed_lab.model --label_index 6 > log/info_multimodal_paired_agreed_lab.log 2>&1
-
-
-nano log/info_multimodal_paired_agreed_lab.log
-nano xcsz/multimodal_social_media/log/info_multimodal_paired_agreed_lab.log
-nano bin/text_image_multimodal_combined_vgg16.py
 
 ```
 
+## Use the trained model to make predictions on new data:
+
+Move the text and image files to ```data/media_data```
+```bash
+python predict_new_data.py
+
+```
 
 ## Please cite the following paper if you are using the data:
 
