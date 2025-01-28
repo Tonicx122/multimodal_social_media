@@ -166,11 +166,17 @@ def main():
     # 解码预测结果
     predicted_labels = label_encoder.inverse_transform(np.argmax(predictions, axis=1))
 
-    for ids, label in zip(ids, predicted_labels):
-        print(f"ID: {ids}, Predicted Label: {label}")
+    # for ids, label in zip(ids, predicted_labels):
+    #     print(f"ID: {ids}, Predicted Label: {label}")
+
+    with open(OUTPUT_PATH, "w") as f:
+        for ids, label in zip(ids, predicted_labels):
+            print(f"ID: {ids}, Predicted Label: {label}")
+            f.write(f"{ids}\t{label}\n")
+    print(f"预测结果已保存到: {OUTPUT_PATH}")
 
     # 保存预测结果
-    save_predictions(OUTPUT_PATH, predictions, ids, predicted_labels)
+    # save_predictions(OUTPUT_PATH, predictions, ids, predicted_labels)
 
 
 
