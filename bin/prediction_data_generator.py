@@ -47,7 +47,8 @@ class PredictionDataGenerator(Sequence):
         images_batch, text_batch = self.__data_generation(temp_indexes)
 
         return (tf.convert_to_tensor(images_batch, dtype=tf.float32),
-                tf.convert_to_tensor(text_batch, dtype=tf.int32))
+                    tf.convert_to_tensor(text_batch, dtype=tf.int32)), \
+                   tf.zeros((len(images_batch),), dtype=tf.float32)
 
     def on_epoch_end(self):
         """
