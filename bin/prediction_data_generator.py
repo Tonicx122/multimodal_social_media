@@ -1,11 +1,11 @@
 import warnings
 
 import numpy as np
-# import tensorflow as tf
+import tensorflow as tf
 from tensorflow.keras.utils import Sequence
 from tensorflow.keras.applications.vgg16 import preprocess_input
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+# import tensorflow.compat.v1 as tf
+# tf.disable_v2_behavior()
 
 class PredictionDataGenerator(Sequence):
     """
